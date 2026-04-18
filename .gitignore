@@ -1,0 +1,14 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+.venv/
+venv/
+
+# Database files (generated at runtime)
+*.db
+instance/
+
+# Env vars
+.env
