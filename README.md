@@ -190,7 +190,7 @@ Enforced on incoming request data before it reaches the models.
 
 **1. Clone the repository**
 ```bash
-git clone https://github.com/Caleb125-source/workout-tracker-api.git
+git clone https://github.com/YOUR_USERNAME/workout-tracker-api.git
 cd workout-tracker-api
 ```
 
@@ -255,7 +255,7 @@ python seed.py
 ### Workouts
 
 #### GET /workouts
-Returns a list of all workouts.
+Returns a flat list of all workouts. No nested data in list view.
 
 ```bash
 curl -s http://localhost:5555/workouts | python -m json.tool
@@ -264,12 +264,24 @@ curl -s http://localhost:5555/workouts | python -m json.tool
 Response `200`:
 ```json
 [
-  {
-    "id": 1,
-    "date": "2025-04-14",
-    "duration_minutes": 60,
-    "notes": "Upper body day"
-  }
+    {
+        "date": "2025-04-14",
+        "duration_minutes": 60,
+        "id": 1,
+        "notes": "Upper body day"
+    },
+    {
+        "date": "2025-04-15",
+        "duration_minutes": 45,
+        "id": 2,
+        "notes": "Cardio session"
+    },
+    {
+        "date": "2025-04-16",
+        "duration_minutes": 90,
+        "id": 3,
+        "notes": "Full body"
+    }
 ]
 ```
 
@@ -285,25 +297,38 @@ curl -s http://localhost:5555/workouts/1 | python -m json.tool
 Response `200`:
 ```json
 {
-  "id": 1,
-  "date": "2025-04-14",
-  "duration_minutes": 60,
-  "notes": "Upper body day",
-  "workout_exercises": [
-    {
-      "id": 1,
-      "exercise_id": 1,
-      "reps": 10,
-      "sets": 4,
-      "duration_seconds": null,
-      "exercise": {
-        "id": 1,
-        "name": "Bench Press",
-        "category": "Strength",
-        "equipment_needed": true
-      }
-    }
-  ]
+    "date": "2025-04-14",
+    "duration_minutes": 60,
+    "id": 1,
+    "notes": "Upper body day",
+    "workout_exercises": [
+        {
+            "duration_seconds": null,
+            "exercise": {
+                "category": "Strength",
+                "equipment_needed": true,
+                "id": 1,
+                "name": "Bench Press"
+            },
+            "exercise_id": 1,
+            "id": 1,
+            "reps": 10,
+            "sets": 4
+        },
+        {
+            "duration_seconds": 60,
+            "exercise": {
+                "category": "Endurance",
+                "equipment_needed": false,
+                "id": 5,
+                "name": "Plank"
+            },
+            "exercise_id": 5,
+            "id": 2,
+            "reps": null,
+            "sets": 3
+        }
+    ]
 }
 ```
 
@@ -325,13 +350,24 @@ curl -s -X POST http://localhost:5555/workouts \
 ```
 
 Request body:
+
 | Field | Type | Required |
 |---|---|---|
 | date | string (YYYY-MM-DD) | Yes |
 | duration_minutes | integer | Yes |
 | notes | string | No |
 
-Response `201` on success.
+Response `201` on success:
+```json
+{
+    "date": "2025-05-01",
+    "duration_minutes": 45,
+    "id": 4,
+    "notes": "Leg day",
+    "workout_exercises": []
+}
+```
+
 Response `422` on validation failure:
 ```json
 { "errors": { "duration_minutes": ["Duration must be at least 1 minute."] } }
@@ -354,7 +390,7 @@ Response `404` if not found.
 ### Exercises
 
 #### GET /exercises
-Returns a list of all exercises.
+Returns a flat list of all exercises. No nested data in list view.
 
 ```bash
 curl -s http://localhost:5555/exercises | python -m json.tool
@@ -363,12 +399,48 @@ curl -s http://localhost:5555/exercises | python -m json.tool
 Response `200`:
 ```json
 [
-  {
-    "id": 1,
-    "name": "Bench Press",
-    "category": "Strength",
-    "equipment_needed": true
-  }
+    {
+        "category": "Strength",
+        "equipment_needed": true,
+        "id": 1,
+        "name": "Bench Press"
+    },
+    {
+        "category": "Strength",
+        "equipment_needed": true,
+        "id": 2,
+        "name": "Barbell Squat"
+    },
+    {
+        "category": "Cardio",
+        "equipment_needed": true,
+        "id": 3,
+        "name": "Treadmill Run"
+    },
+    {
+        "category": "Cardio",
+        "equipment_needed": false,
+        "id": 4,
+        "name": "Jumping Jacks"
+    },
+    {
+        "category": "Endurance",
+        "equipment_needed": false,
+        "id": 5,
+        "name": "Plank"
+    },
+    {
+        "category": "Flexibility",
+        "equipment_needed": false,
+        "id": 6,
+        "name": "Yoga Stretch"
+    },
+    {
+        "category": "Balance",
+        "equipment_needed": false,
+        "id": 7,
+        "name": "Single Leg Stand"
+    }
 ]
 ```
 
@@ -384,29 +456,32 @@ curl -s http://localhost:5555/exercises/1 | python -m json.tool
 Response `200`:
 ```json
 {
-  "id": 1,
-  "name": "Bench Press",
-  "category": "Strength",
-  "equipment_needed": true,
-  "workout_exercises": [
-    {
-      "id": 1,
-      "workout_id": 1,
-      "reps": 10,
-      "sets": 4,
-      "duration_seconds": null,
-      "workout": {
-        "id": 1,
-        "date": "2025-04-14",
-        "duration_minutes": 60,
-        "notes": "Upper body day"
-      }
-    }
-  ]
+    "category": "Strength",
+    "equipment_needed": true,
+    "id": 1,
+    "name": "Bench Press",
+    "workout_exercises": [
+        {
+            "duration_seconds": null,
+            "id": 1,
+            "reps": 10,
+            "sets": 4,
+            "workout": {
+                "date": "2025-04-14",
+                "duration_minutes": 60,
+                "id": 1,
+                "notes": "Upper body day"
+            },
+            "workout_id": 1
+        }
+    ]
 }
 ```
 
-Response `404` if not found.
+Response `404` if not found:
+```json
+{ "error": "Exercise not found." }
+```
 
 ---
 
@@ -421,13 +496,24 @@ curl -s -X POST http://localhost:5555/exercises \
 ```
 
 Request body:
+
 | Field | Type | Required | Valid values |
 |---|---|---|---|
 | name | string | Yes | Any, max 100 chars |
 | category | string | Yes | Strength, Cardio, Flexibility, Balance, Endurance |
 | equipment_needed | boolean | No | true / false (default: false) |
 
-Response `201` on success.
+Response `201` on success:
+```json
+{
+    "category": "Strength",
+    "equipment_needed": false,
+    "id": 8,
+    "name": "Pull Up",
+    "workout_exercises": []
+}
+```
+
 Response `422` on validation failure:
 ```json
 { "errors": { "category": ["Must be one of: Strength, Cardio, Flexibility, Balance, Endurance."] } }
@@ -442,7 +528,7 @@ Deletes an exercise and all its associated WorkoutExercise records.
 curl -s -X DELETE http://localhost:5555/exercises/1 -o /dev/null -w "%{http_code}"
 ```
 
-Response `204` on success.
+Response `204` on success (empty body).
 Response `404` if not found.
 
 ---
@@ -459,7 +545,8 @@ curl -s -X POST http://localhost:5555/workouts/2/exercises/3/workout_exercises \
   | python -m json.tool
 ```
 
-Request body (all optional):
+Request body (all fields optional):
+
 | Field | Type | Rule |
 |---|---|---|
 | reps | integer | Must be > 0 if provided |
@@ -469,21 +556,36 @@ Request body (all optional):
 Response `201` on success:
 ```json
 {
-  "id": 7,
-  "workout_id": 2,
-  "exercise_id": 3,
-  "reps": 12,
-  "sets": 3,
-  "duration_seconds": null,
-  "exercise": { "id": 3, "name": "Plank", "category": "Endurance" },
-  "workout": { "id": 2, "date": "2025-04-15", "duration_minutes": 45 }
+    "duration_seconds": null,
+    "exercise": {
+        "category": "Cardio",
+        "equipment_needed": true,
+        "id": 3,
+        "name": "Treadmill Run"
+    },
+    "exercise_id": 3,
+    "id": 7,
+    "reps": 12,
+    "sets": 3,
+    "workout": {
+        "date": "2025-04-15",
+        "duration_minutes": 45,
+        "id": 2,
+        "notes": "Cardio session"
+    },
+    "workout_id": 2
 }
 ```
 
-Response `404` if workout or exercise not found.
-Response `422` on validation failure.
+Response `404` if workout or exercise not found:
+```json
+{ "error": "Workout not found." }
+```
 
----
+Response `422` on validation failure:
+```json
+{ "errors": { "reps": ["Reps must be a positive integer."] } }
+```
 
 ## Testing
 
@@ -531,3 +633,4 @@ This project was built using a feature branch workflow. Each feature was develop
 | `feature/database-setup` | Flask app skeleton, flask db init/migrate/upgrade, seed file |
 | `feature/schemas` | Marshmallow schemas with schema validations |
 | `feature/endpoints` | All 9 REST endpoints with serialization and error handling |
+
